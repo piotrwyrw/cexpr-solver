@@ -1,0 +1,13 @@
+# ninja log v5
+2	234	6884330912148422	build.ninja	a0eb44cccb6567de
+2	65	6886046752683771	CMakeFiles/expr_solver.dir/main.c.obj	4ae1f3dc9e4a4597
+74	170	6886048890069173	expr_solver.exe	9b658c4e74bb1d50
+2	85	6886045900520914	CMakeFiles/expr_solver.dir/c/ast.c.obj	d0c65e07810aeb04
+14	95	6886008404953023	CMakeFiles/expr_solver.dir/c/token.c.obj	e9258536b502cee6
+3	73	6886048889135365	CMakeFiles/expr_solver.dir/c/tokenizer.c.obj	efd254c024c25259
+2	70	6886042949468128	CMakeFiles/expr_solver.dir/c/util.c.obj	9d5f2cfeaae1862f
+10	94	6886042674687522	CMakeFiles/expr_solver.dir/c/parser.c.obj	e36adbf964341bee
+2	81	6886050891680130	CMakeFiles/expr_solver.dir/c/parser.c.obj	e36adbf964341bee
+82	170	6886050892526805	expr_solver.exe	9b658c4e74bb1d50
+2	71	6886050989554406	CMakeFiles/expr_solver.dir/main.c.obj	4ae1f3dc9e4a4597
+71	170	6886050990504387	expr_solver.exe	9b658c4e74bb1d50
