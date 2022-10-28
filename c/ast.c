@@ -18,6 +18,7 @@ const char *node_type_to_string(node_type type) {
         AUTO(node_type_unary);
         AUTO(node_type_variable)
         AUTO(node_type_immediate)
+        AUTO(node_type_assignment)
         AUTO(node_type_unknown)
     }
 }
@@ -119,6 +120,19 @@ void node_print_recurse(node *n, int d) {
                 d --;
             d --;
             break;
+        case node_type_assignment:
+            _PRINT("<Assignment>\n");
+            d ++;
+                _PRINT("Destination ->\n");
+                d ++;
+                    node_print_recurse(n->assignment.var, d);
+                d --;
+                _PRINT("Source ->\n");
+                d ++;
+                    node_print_recurse(n->assignment.val, d);
+                d --;
+            d --;
+            break;
         case node_type_unknown:
             _PRINT("<Unknown>\n");
             break;
@@ -144,6 +158,9 @@ void node_destroy(node *node) {
             break;
         case node_type_binary:
             node_destroy_binary(node);
+            break;
+        case node_type_assignment:
+            node_destroy_assignment(node);
             break;
         default:
             break;
@@ -184,6 +201,18 @@ node *node_create_immediate(immediate_value v) {
     node *n = node_create_base(node_type_immediate);
     n->immediate.value = v;
     return n;
+}
+
+node *node_create_assignment(node *var, node *val) {
+    node *n = node_create_base(node_type_assignment);
+    n->assignment.var = var;
+    n->assignment.val = val;
+    return n;
+}
+
+void node_destroy_assignment(node *n) {
+    node_destroy(n->assignment.var);
+    node_destroy(n->assignment.val);
 }
 
 node *node_create_immediate_auto(token *t) {

@@ -22,6 +22,9 @@ token_type classify(char c) {
     if (c == '^') return token_xor;
     if (c == '>') return token_imply;
     if (c == '!') return token_not;
+    if (c == ':') return token_colon;
+    if (c == '=') return token_equals;
+    if (c == ';') return token_semi;
 
     return token_unknown;
 }
@@ -41,6 +44,9 @@ const char *token_type_to_string(token_type t) {
         AUTO(token_not)
         AUTO(token_letter)
         AUTO(token_immediate)
+        AUTO(token_colon)
+        AUTO(token_equals)
+        AUTO(token_semi)
         AUTO(token_unknown)
     }
 }

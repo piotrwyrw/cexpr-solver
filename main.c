@@ -3,17 +3,13 @@
 #include "h/parse.h"
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
-int main() {
-    const char *text = "a&b|c";
-    char *actual_text = string_strip(text);
-
-    tokenizer *t = tokenizer_create(actual_text, 0);
+void parse(char *s) {
+    tokenizer *t = tokenizer_create(s, 0);
 
     parser *p = parser_create(t);
-
-    // Disable tokenizer warnings
-    token_set_warning(false);
 
     parser_init(p);
 
@@ -25,7 +21,40 @@ int main() {
 
     parser_destroy(p);
     tokenizer_destroy(t);
+}
 
-    free(actual_text);
+void start_repl() {
+    char *buffer = malloc(100+1);
+    _Bool exit_repl = false;
+    while (!exit_repl) {
+        string_clean(buffer);
+
+        printf(">");
+
+        fgets(buffer, 100, stdin);
+
+        char *input = string_strip(buffer);
+
+        if (!strcmp(input, ".exit")) {
+            exit_repl = true;
+            goto m_free;
+        }
+
+        parse(input);
+
+        m_free:
+        free(input);
+    }
+    free(buffer);
+}
+
+int main() {
+    // Disable tokenizer warnings
+    token_set_warning(false);
+
+    printf("LogiC REPL v1.0\nType '.exit' to exit.\n");
+
+    start_repl();
+
     return 0;
 }

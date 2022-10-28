@@ -31,3 +31,9 @@ char *string_rep(char **dst, char c, int n) {
     (*dst)[n] = '\0';
     return *dst;
 }
+
+void string_clean(char *s) {
+    if (!s) return;
+    unsigned le = strlen(s);
+    memset(s, '\0', le + 1);
+}

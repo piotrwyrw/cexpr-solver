@@ -14,6 +14,7 @@ typedef enum {
     node_type_unary,
     node_type_variable,
     node_type_immediate,
+    node_type_assignment,
 
     node_type_unknown
 } node_type;
@@ -70,6 +71,10 @@ struct node {
         struct {
             immediate_value value;
         } immediate;
+        struct {
+            node *var;
+            node *val;
+        } assignment;
     };
 };
 
@@ -85,10 +90,11 @@ __ignore node *node_create_unary(node *, unary_type);
 void node_destroy_unary(node *);
 
 __ignore node *node_create_variable(char);
-void node_destroy_variable(node *);
 
 __ignore node *node_create_immediate(immediate_value);
-void node_destroy_immediate(node *);
+
+__ignore node *node_create_assignment(node *, node *);
+void node_destroy_assignment(node *);
 
 node *node_create_immediate_auto(token *);
 

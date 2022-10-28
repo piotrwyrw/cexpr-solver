@@ -23,6 +23,10 @@ typedef enum {
     token_letter,
     token_immediate,
 
+    token_colon,
+    token_equals,
+    token_semi,
+
     token_unknown
 } token_type;
 

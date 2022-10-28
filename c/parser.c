@@ -74,14 +74,55 @@ _Bool parser_cmp_var(parser *p, char _c, int n, ...) {
     return state;
 }
 
+#define SYNTAX_ERR(p, x, ...) \
+        printf("[Col. %d] Syntax error: ", p->t->i); \
+        printf(x, ##__VA_ARGS__);
+
+
 node *parser_parse(parser *p) {
-    node *n = parser_parse_first_degree(p);
-    if (p->n && n) {
-        printf("Syntax error: There are tokens trailing the expression.\n");
-        node_destroy(n);
+    if (!p->c) {
         return NULL;
     }
-    return n;
+
+    node *tmp = NULL;
+
+    // Assignment
+    if (parser_cmp(p, token_letter) && parser_cmp_next(p, token_equals)) {
+        tmp = parser_parse_assignment(p);
+        goto do_return;
+    }
+
+    tmp = parser_parse_first_degree(p);
+
+    do_return:
+    if (p->n) {
+        SYNTAX_ERR(p, "Expected a single statement per line.\n");
+        if (tmp) token_destroy(tmp);
+        return NULL;
+    }
+    return tmp;
+}
+
+node *parser_parse_assignment(parser *p) {
+    if (!parser_cmp(p, token_letter)) {
+        SYNTAX_ERR(p, "Expected an identifier.\n")
+        return NULL;
+    }
+
+    char id = p->c->c;
+
+    parser_consume(p);
+
+    if (!parser_cmp(p, token_equals)) {
+        SYNTAX_ERR(p, "Expected an '=' operator.\n");
+        return NULL;
+    }
+
+    parser_consume(p);
+
+    node *expr = parser_parse_first_degree(p);
+
+    return node_create_assignment(node_create_variable(id), expr);
 }
 
 node *parser_parse_first_degree(parser *p) {
@@ -164,7 +205,7 @@ node *parser_parse_atom(parser *p) {
         parser_consume(p);
         if (!parser_cmp(p, token_rparen)) {
             char *tok_s = token_string(p->c);
-            printf("Expected closing parentheses after the expression, got '%s' instead.\n", tok_s);
+            SYNTAX_ERR(p, "Expected closing parentheses after the expression, got '%s' instead.\n", tok_s);
             free(tok_s);
             return NULL;
         }
@@ -172,7 +213,7 @@ node *parser_parse_atom(parser *p) {
     }
 
     char *tok_s = token_string(p->c);
-    printf("Syntax error: Invalid atom: '%s'\n", tok_s);
+    printf("[Col. %d] Syntax error: Invalid atom: '%s'\n", p->t->i,  tok_s);
     free(tok_s);
 
     return NULL;
