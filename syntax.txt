@@ -2,7 +2,7 @@
 
 <first-degree>  ::=     <second-degree> { <first-deg-op> <first-degree> }
 
-<second-degree> ::=     <atom> { <second-deg-op> <first-degree> }
+<second-degree> ::=     <atom> { <second-deg-op> <second-degree> }
 
 <atom>          ::=     ("!") <immediate>
                         | <variable>
