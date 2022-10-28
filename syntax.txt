@@ -1,0 +1,20 @@
+<expression>    ::=     <first-degree>
+
+<first-degree>  ::=     <second-degree> { <first-deg-op> <first-degree> }
+
+<second-degree> ::=     <atom> { <second-deg-op> <first-degree> }
+
+<atom>          ::=     ("!") <immediate>
+                        | <variable>
+                        | <sub-expr>
+
+<sub-expr>      ::=     "(" <expression> ")"
+
+<immediate>     ::=     "0" | "1"
+
+<variable>      ::=     "a" | "b" | "c" | "d' | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m"
+                        "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
+
+<first-deg-op>  ::=     "|" | "^" | ">"
+
+<second-deg-op> ::=     "&"
