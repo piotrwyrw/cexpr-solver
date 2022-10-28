@@ -75,10 +75,15 @@ _Bool parser_cmp_var(parser *p, char _c, int n, ...) {
 }
 
 node *parser_parse(parser *p) {
-    return parser_parse_first_degree(p);
+    node *n = parser_parse_first_degree(p);
+    if (p->n && n) {
+        printf("Syntax error: There are tokens trailing the expression.\n");
+        node_destroy(n);
+        return NULL;
+    }
+    return n;
 }
 
-// a |^> b
 node *parser_parse_first_degree(parser *p) {
     node *left = parser_parse_second_degree(p);
 
@@ -87,10 +92,6 @@ node *parser_parse_first_degree(parser *p) {
 
     if (parser_cmp_var(p, NEXT_TOKEN, 3, token_or, token_xor, token_imply))
         parser_consume(p);
-    else if (p->n) {
-        printf("Syntax error: Unknown operator: %s\n", token_type_to_string(p->n->type));
-        return NULL;
-    }
 
     while (parser_cmp_var(p, CURRENT_TOKEN, 3, token_or, token_xor, token_imply)) {
         binary_type bop = binary_type_from(p->c->type);
@@ -130,14 +131,13 @@ node *parser_parse_second_degree(parser *p) {
 
         parser_consume(p);
 
-        node *right = parser_parse_first_degree(p);
+        node *right = parser_parse_second_degree(p);
         if (!right) {
             node_destroy(left);
             return NULL;
         }
 
         node *tmp = node_create_binary(left, right, bop);
-
 
         left = tmp;
 
@@ -158,13 +158,22 @@ node *parser_parse_atom(parser *p) {
     if (parser_cmp(p, token_lparen)) {
         parser_consume(p);
         node *expr = parser_parse_first_degree(p);
+        if (!expr) {
+            return NULL;
+        }
         parser_consume(p);
         if (!parser_cmp(p, token_rparen)) {
-            printf("Expected closing parentheses after the expression.\n");
+            char *tok_s = token_string(p->c);
+            printf("Expected closing parentheses after the expression, got '%s' instead.\n", tok_s);
+            free(tok_s);
             return NULL;
         }
         return expr;
     }
+
+    char *tok_s = token_string(p->c);
+    printf("Syntax error: Invalid atom: '%s'\n", tok_s);
+    free(tok_s);
 
     return NULL;
 

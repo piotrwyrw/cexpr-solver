@@ -11,7 +11,7 @@
 #define AUTO(c) case c: return #c;
 #define STR_UNKNOWN "(unknown)"
 
-char *node_type_to_string(node_type type) {
+const char *node_type_to_string(node_type type) {
     switch (type) {
         default: return STR_UNKNOWN;
         AUTO(node_type_binary);
@@ -22,7 +22,7 @@ char *node_type_to_string(node_type type) {
     }
 }
 
-char *binary_type_to_string(binary_type type) {
+const char *binary_type_to_string(binary_type type) {
     switch (type) {
         default: return STR_UNKNOWN;
         AUTO(binary_type_implication)
@@ -43,7 +43,7 @@ binary_type binary_type_from(token_type type) {
     }
 }
 
-char *immediate_value_to_string(immediate_value val) {
+const char *immediate_value_to_string(immediate_value val) {
     switch (val) {
         default: return STR_UNKNOWN;
         AUTO(immediate_on)
@@ -60,7 +60,7 @@ immediate_value immediate_value_from(char c) {
     }
 }
 
-char *unary_to_string(unary_type type) {
+const char *unary_to_string(unary_type type) {
     switch (type) {
         default: return STR_UNKNOWN;
         AUTO(unary_not)
@@ -86,7 +86,7 @@ void node_print_recurse(node *n, int d) {
     char *padding = NULL;
 
     if (n == NULL) {
-        _PRINT("<< Null Node >>\n");
+        _PRINT("<Null Node>\n");
         goto end;
     }
 
@@ -120,7 +120,7 @@ void node_print_recurse(node *n, int d) {
             d --;
             break;
         case node_type_unknown:
-            _PRINT("<< Unknown >>\n");
+            _PRINT("<Unknown>\n");
             break;
     }
 

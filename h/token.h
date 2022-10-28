@@ -27,7 +27,7 @@ typedef enum {
 } token_type;
 
 token_type classify(char);
-char *token_type_to_string(token_type);
+const char *token_type_to_string(token_type);
 
 typedef struct {
     char c;
@@ -46,5 +46,7 @@ void token_destroy(token *);
 
 _Bool token_compare(token *, token *);
 _Bool token_quick_compare(token *, token_type);
+
+char *token_string(token *);
 
 #endif //EXPR_SOLVER_TOKEN_H

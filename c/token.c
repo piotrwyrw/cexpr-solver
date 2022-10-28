@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 token_type classify(char c) {
     if (IS_LETTER(c))
@@ -28,7 +29,7 @@ token_type classify(char c) {
 #define AUTO(c) case c: return #c;
 #define STR_UNKNOWN "(unknown)"
 
-char *token_type_to_string(token_type t) {
+const char *token_type_to_string(token_type t) {
     switch (t) {
         default: return STR_UNKNOWN;
         AUTO(token_lparen)
@@ -83,4 +84,14 @@ _Bool token_quick_compare(token *t, token_type _t) {
     if (t == NULL)
         return false;
     return _t == t->type;
+}
+
+char *token_string(token *t) {
+    if (!t)
+        return strdup("(null)");
+
+    char *s = malloc(3);
+    s[0] = t->c;
+    s[1] = '\0';
+    return s;
 }

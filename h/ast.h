@@ -18,7 +18,7 @@ typedef enum {
     node_type_unknown
 } node_type;
 
-char *node_type_to_string(node_type);
+const char *node_type_to_string(node_type);
 
 typedef enum {
     binary_type_implication,
@@ -29,7 +29,7 @@ typedef enum {
     binary_type_unknown
 } binary_type;
 
-char *binary_type_to_string(binary_type);
+const char *binary_type_to_string(binary_type);
 binary_type binary_type_from(token_type);
 
 typedef enum {
@@ -39,7 +39,7 @@ typedef enum {
     immediate_unknown
 } immediate_value;
 
-char *immediate_value_to_string(immediate_value);
+const char *immediate_value_to_string(immediate_value);
 immediate_value immediate_value_from(char);
 
 typedef enum {
@@ -47,7 +47,7 @@ typedef enum {
     unary_unknown
 } unary_type;
 
-char *unary_to_string(unary_type);
+const char *unary_to_string(unary_type);
 unary_type unary_type_from(token_type);
 
 typedef struct node node;
