@@ -1,3 +1,0 @@
-C:/Users/pwpio/CLionProjects/expr-solver/cmake-build-debug/CMakeFiles/expr_solver.dir
-C:/Users/pwpio/CLionProjects/expr-solver/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/pwpio/CLionProjects/expr-solver/cmake-build-debug/CMakeFiles/rebuild_cache.dir
