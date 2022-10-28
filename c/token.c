@@ -25,6 +25,28 @@ token_type classify(char c) {
     return token_unknown;
 }
 
+#define AUTO(c) case c: return #c;
+#define STR_UNKNOWN "(unknown)"
+
+char *token_type_to_string(token_type t) {
+    switch (t) {
+        default: return STR_UNKNOWN;
+        AUTO(token_lparen)
+        AUTO(token_rparen)
+        AUTO(token_or)
+        AUTO(token_and)
+        AUTO(token_xor)
+        AUTO(token_imply)
+        AUTO(token_not)
+        AUTO(token_letter)
+        AUTO(token_immediate)
+        AUTO(token_unknown)
+    }
+}
+
+#undef AUTO
+#undef STR_UNKNOWN
+
 token *token_create(char c, token_type type, unsigned col) {
     token *t = malloc(sizeof(token));
     t->c = c;
@@ -33,12 +55,18 @@ token *token_create(char c, token_type type, unsigned col) {
     return t;
 }
 
+_Bool token_show_warn_classification = true;
+
 token *token_auto(char c, unsigned col) {
     token_type type = classify(c);
-    if (type == token_unknown)
+    if (type == token_unknown && token_show_warn_classification)
         printf("Warning: Failed to classify '%c'.\n", c);
 
     return token_create(c, type, col);
+}
+
+void token_set_warning(_Bool w) {
+    token_show_warn_classification = w;
 }
 
 void token_destroy(token *t) {

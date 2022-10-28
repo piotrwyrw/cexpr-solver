@@ -27,12 +27,12 @@ _Bool parser_cmp(parser *, token_type);
 _Bool parser_cmp_next(parser *, token_type);
 _Bool parser_cmp_var(parser *, char, int, ...);
 
-extern node ast_root;
-
 node *parser_parse(parser *);
 
 node *parser_parse_first_degree(parser *);  // Low precedence
 node *parser_parse_second_degree(parser *); // Higher precedence
 node *parser_parse_atom(parser *);          // Highest precedence
+
+void parser_panic(parser *);
 
 #endif //EXPR_SOLVER_PARSE_H

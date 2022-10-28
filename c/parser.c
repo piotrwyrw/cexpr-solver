@@ -74,17 +74,38 @@ _Bool parser_cmp_var(parser *p, char _c, int n, ...) {
     return state;
 }
 
+node *parser_parse(parser *p) {
+    return parser_parse_first_degree(p);
+}
+
 // a |^> b
 node *parser_parse_first_degree(parser *p) {
     node *left = parser_parse_second_degree(p);
 
+    if (!left)
+        return NULL;
+
     if (parser_cmp_var(p, NEXT_TOKEN, 3, token_or, token_xor, token_imply))
         parser_consume(p);
+    else if (p->n) {
+        printf("Syntax error: Unknown operator: %s\n", token_type_to_string(p->n->type));
+        return NULL;
+    }
 
     while (parser_cmp_var(p, CURRENT_TOKEN, 3, token_or, token_xor, token_imply)) {
         binary_type bop = binary_type_from(p->c->type);
+
         parser_consume(p);
-        node *tmp = node_create_binary(left, parser_parse_first_degree(p), bop);
+
+        node *right = parser_parse_first_degree(p);
+
+        if (!right) {
+            node_destroy(left);
+            return NULL;
+        }
+
+        node *tmp = node_create_binary(left, right, bop);
+
         left = tmp;
 
         if (parser_cmp_var(p, NEXT_TOKEN, 3, token_or, token_xor, token_imply))
@@ -98,13 +119,26 @@ node *parser_parse_first_degree(parser *p) {
 node *parser_parse_second_degree(parser *p) {
     node *left = parser_parse_atom(p);
 
+    if (!left)
+        return NULL;
+
     if (parser_cmp_next(p, token_and))
         parser_consume(p);
 
     while (parser_cmp(p, token_and)) {
         binary_type bop = binary_type_from(p->c->type);
+
         parser_consume(p);
-        node *tmp = node_create_binary(left, parser_parse_first_degree(p), bop);
+
+        node *right = parser_parse_first_degree(p);
+        if (!right) {
+            node_destroy(left);
+            return NULL;
+        }
+
+        node *tmp = node_create_binary(left, right, bop);
+
+
         left = tmp;
 
         if (parser_cmp_next(p, token_and))

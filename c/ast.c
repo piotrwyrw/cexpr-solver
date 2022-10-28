@@ -67,6 +67,9 @@ char *unary_to_string(unary_type type) {
     }
 }
 
+#undef STR_UNKNOWN
+#undef AUTO
+
 unary_type unary_type_from(token_type type) {
     switch (type) {
         default: return unary_unknown;
@@ -126,6 +129,8 @@ void node_print_recurse(node *n, int d) {
     free(padding);
 }
 
+#undef _PRINT
+
 node *node_create_base(node_type type) {
     node *n = malloc(sizeof(node));
     n->type = type;
@@ -134,13 +139,13 @@ node *node_create_base(node_type type) {
 
 void node_destroy(node *node) {
     switch (node->type) {
-        case node_type_variable:
-            break;
         case node_type_unary:
             node_destroy_unary(node);
             break;
         case node_type_binary:
             node_destroy_binary(node);
+            break;
+        default:
             break;
     }
     free(node);
@@ -194,8 +199,4 @@ node *node_create_immediate_auto(token *t) {
     else { printf("Invalid immediate value: '%c'.\n", t->c); return NULL; }
 
     return node_create_immediate(v);
-}
-
-void node_destroy_immediate(node *n) {
-    free(n);
 }

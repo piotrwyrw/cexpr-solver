@@ -5,11 +5,16 @@
 #include <stdlib.h>
 
 int main() {
-    const char *text = "a|b|c&d";
+    const char *text = "a/b";
     char *actual_text = string_strip(text);
 
     tokenizer *t = tokenizer_create(actual_text, 0);
+
     parser *p = parser_create(t);
+
+    // Disable tokenizer warnings
+    token_set_warning(false);
+
     parser_init(p);
 
     node *n = parser_parse_first_degree(p);
