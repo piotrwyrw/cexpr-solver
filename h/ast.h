@@ -7,7 +7,7 @@
 
 #include "token.h"
 
-#define __ignore [[nodiscard("Return value must not be ignored.")]]
+#define __ignore
 
 typedef enum {
     node_type_binary,
