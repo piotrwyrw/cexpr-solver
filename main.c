@@ -25,10 +25,10 @@ void parse(char *s) {
 
 void start_repl() {
     char *buffer = malloc(100+1);
+    memset(buffer, '\0', 101);
+
     _Bool exit_repl = false;
     while (!exit_repl) {
-        string_clean(buffer);
-
         printf(">");
 
         fgets(buffer, 100, stdin);
@@ -44,6 +44,8 @@ void start_repl() {
 
         m_free:
         free(input);
+
+        memset(buffer, '\0', 101);
     }
     free(buffer);
 }

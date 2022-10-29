@@ -97,7 +97,7 @@ node *parser_parse(parser *p) {
     do_return:
     if (p->n) {
         SYNTAX_ERR(p, "Expected a single statement per line.\n");
-        if (tmp) token_destroy(tmp);
+        if (tmp) node_destroy(tmp);
         return NULL;
     }
     return tmp;
@@ -121,6 +121,10 @@ node *parser_parse_assignment(parser *p) {
     parser_consume(p);
 
     node *expr = parser_parse_first_degree(p);
+
+    if (!expr) {
+        return NULL;
+    }
 
     return node_create_assignment(node_create_variable(id), expr);
 }
