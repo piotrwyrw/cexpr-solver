@@ -19,6 +19,7 @@ const char *node_type_to_string(node_type type) {
         AUTO(node_type_variable)
         AUTO(node_type_immediate)
         AUTO(node_type_assignment)
+        AUTO(node_type_not)
         AUTO(node_type_unknown)
     }
 }

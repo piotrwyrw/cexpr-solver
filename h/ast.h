@@ -13,6 +13,7 @@ typedef enum {
     node_type_variable,
     node_type_immediate,
     node_type_assignment,
+    node_type_not,
 
     node_type_unknown
 } node_type;

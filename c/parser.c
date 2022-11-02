@@ -75,7 +75,7 @@ _Bool parser_cmp_var(parser *p, char _c, int n, ...) {
 }
 
 #define SYNTAX_ERR(p, x, ...) \
-        printf("[Col. %d] Syntax error: ", p->t->i); \
+        printf("[Col. %d :: %s] Syntax error: ", p->t->i, __func__); \
         printf(x, ##__VA_ARGS__);
 
 
@@ -95,7 +95,7 @@ node *parser_parse(parser *p) {
     tmp = parser_parse_first_degree(p);
 
     do_return:
-    if (p->n) {
+    if (p->n && tmp) {
         SYNTAX_ERR(p, "Expected a single statement per line.\n");
         if (tmp) node_destroy(tmp);
         return NULL;
@@ -194,11 +194,23 @@ node *parser_parse_second_degree(parser *p) {
 }
 
 node *parser_parse_atom(parser *p) {
-    if (parser_cmp(p, token_letter))
-        return node_create_variable(p->c->c);
+    _Bool not = false;
+    node *n = NULL;
 
-    if (parser_cmp(p, token_immediate))
-        return node_create_immediate(immediate_value_from(p->c->c));
+    if (parser_cmp(p, token_not)) {
+        parser_consume(p);
+        not = true;
+    }
+
+    if (parser_cmp(p, token_letter)) {
+        n = node_create_variable(p->c->c);
+        goto _return;
+    }
+
+    if (parser_cmp(p, token_immediate)) {
+        n = node_create_immediate(immediate_value_from(p->c->c));
+        goto _return;
+    }
 
     if (parser_cmp(p, token_lparen)) {
         parser_consume(p);
@@ -213,13 +225,23 @@ node *parser_parse_atom(parser *p) {
             free(tok_s);
             return NULL;
         }
-        return expr;
+        n = expr;
+        goto _return;
     }
 
     char *tok_s = token_string(p->c);
-    printf("[Col. %d] Syntax error: Invalid atom: '%s'\n", p->t->i,  tok_s);
+    SYNTAX_ERR(p, "Syntax error: Invalid atom: '%s'\n", tok_s);
     free(tok_s);
-
     return NULL;
 
+    _return:
+    if (!n) {
+        SYNTAX_ERR(p, "Expected an expression after the '!' token.\n");
+        return NULL;
+    }
+
+    if (!not)
+        return n;
+
+    return node_create_unary(n, unary_not);
 }
