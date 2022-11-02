@@ -61,7 +61,10 @@ int lookup_insert(lookup_table *table, key_val *kv) {
             if (table->table[i]->key == kv->key) {
                 if (table->kv_val_free)
                     (table->kv_val_free)(table->table[i]->val);
-                key_val_destroy(table->table[i]);
+                if (table->kv_val_free)
+                    key_val_destroy2(table->table[i], table->kv_val_free);
+                else
+                    key_val_destroy(table->table[i]);
                 table->table[i] = kv;
             }
         }
@@ -122,7 +125,29 @@ int lookup_get(lookup_table *table, char k) {
 
 void lookup_each(lookup_table *t, void(*f)(void *)) {
     for (unsigned i = 0; i < t->size; i ++)
-        f(t->table[i]);
+        if (t->table[i])
+            f(t->table[i]);
+}
+
+void lookup_purge(lookup_table *t) {
+    for (unsigned i = 0; i < t->size; i ++)
+        if (t->table[i]) {
+            if (t->kv_val_free) {
+                key_val_destroy2(t->table[i], t->kv_val_free);
+            } else {
+                key_val_destroy(t->table[i]);
+            }
+        }
+
+    lookup_clear(t);
+}
+
+unsigned lookup_entry_count(lookup_table *t) {
+    unsigned u = 0;
+    for (unsigned i = 0; i < t->size; i ++)
+        if (t->table[i])
+            u ++;
+    return u;
 }
 
 void lookup_clear(lookup_table *t) {

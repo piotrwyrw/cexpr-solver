@@ -30,6 +30,8 @@ int lookup_insert_ast(lookup_table *, node *);
 _Bool lookup_rm(lookup_table *, int);
 int lookup_get(lookup_table *, char);
 void lookup_each(lookup_table *, void(*)(void *));
+void lookup_purge(lookup_table *);
+unsigned lookup_entry_count(lookup_table *);
 void lookup_clear(lookup_table *);
 
 #endif //EXPR_SOLVER_LOOKUP_H

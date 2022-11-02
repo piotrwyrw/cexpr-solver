@@ -7,6 +7,5 @@
 
 char *string_strip(char *);
 char *string_rep(char **, char, int);
-void string_clean(char *);
 
 #endif //EXPR_SOLVER_UTIL_H

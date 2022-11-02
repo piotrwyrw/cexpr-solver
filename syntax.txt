@@ -4,9 +4,9 @@
 
 <second-degree> ::=     <atom> { <second-deg-op> <second-degree> }
 
-<atom>          ::=     ("!") <immediate>
-                        | <variable>
-                        | <sub-expr>
+<atom>          ::=     ("!")   <immediate>
+                                | <variable>
+                                | <sub-expr>
 
 <sub-expr>      ::=     "(" <expression> ")"
 

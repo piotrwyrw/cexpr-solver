@@ -10,6 +10,8 @@
 
 #define LETTER_COUNT (int) (('Z' - 'A') + ('z' - 'a'))
 
+lookup_table *lt = NULL;
+
 node *parse(char *s) {
     tokenizer *t = tokenizer_create(s, 0);
 
@@ -50,7 +52,10 @@ void handle_command(char *s) {
         printf("(.show-ast) :: Show the AST Tree when evaluating. For debugging purposes.\n");
         printf("(.hide-ast) :: Don't display the AST anymore.\n");
         printf("(.help) :: Display this page.\n");
-        printf("(.info) :: Info about LogiC.\n");
+        printf("(.info) :: Info about LogiC.\n\n");
+        printf("(.cache) :: Display cache contents.\n");
+        printf("(.cache-inspect) :: Print the cache contents (AST format).\n");
+        printf("(.cache-clear) :: Clear the cache.\n");
         printf("----------\n");
         return;
     }
@@ -91,6 +96,37 @@ void handle_command(char *s) {
         return;
     }
 
+    if (!strcmp(s, ".cache")) {
+        printf("Cache [Entry count: %d].\n", lookup_entry_count(lt));
+        for (unsigned i = 0; i < lt->size; i ++)
+            if (lt->table[i])
+                printf("%c @ %d\n", lt->table[i]->key, i);
+        return;
+    }
+
+    if (!strcmp(s, ".cache-inspect")) {
+        unsigned ct = lookup_entry_count(lt);
+        if (ct == 0) {
+            printf("The cache is empty.\n");
+            return;
+        }
+        printf("Inspecting %d entries ..\n", ct);
+        for (unsigned i = 0; i < lt->size; i ++)
+            if (lt->table[i]) {
+                printf("-----[ Index %d / '%c' ]-----\n", i, lt->table[i]->key );
+                node_print_recurse(lt->table[i]->val, 0);
+                printf("\n");
+            }
+        return;
+    }
+
+    if (!strcmp(s, ".cache-clear")) {
+        lookup_purge(lt);
+        printf("Cache cleared.\n");
+        return;
+    }
+
+
     printf("Unknown command. Use '.help' for help.\n");
 
 }
@@ -99,7 +135,7 @@ void start_repl() {
     char *buffer = malloc(100+1);
     memset(buffer, '\0', 101);
 
-    lookup_table *table = create_lookup_table(LETTER_COUNT, node_destroy);
+    lookup_table *table = lt = create_lookup_table(LETTER_COUNT, node_destroy);
     node *n = NULL;
 
     while (!stat_exit_repl) {
@@ -136,7 +172,7 @@ void start_repl() {
 }
 
 int main() {
-    printf("LogiC REPL v1.0\nType '.exit' to exit.\n");
+    printf("LogiC REPL v1.0\nType '.exit' to exit or '.help' for help.\n");
 
     start_repl();
 
