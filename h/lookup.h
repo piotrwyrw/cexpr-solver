@@ -19,10 +19,11 @@ void key_val_destroy2(key_val *, void (*)(void *));
 typedef struct {
     key_val **table;
     unsigned int size;
+    void (*kv_val_free)(void *);
 } lookup_table;
 
-lookup_table *create_lookup_table(unsigned int);
-void lookup_destroy(lookup_table *, void(*)(void *));
+lookup_table *create_lookup_table(unsigned int, void (*)(void *));
+void lookup_destroy(lookup_table *);
 
 int lookup_insert(lookup_table *, key_val *);
 int lookup_insert_ast(lookup_table *, node *);

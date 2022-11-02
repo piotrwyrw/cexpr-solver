@@ -18,3 +18,4 @@
 <first-deg-op>  ::=     "|" | "^" | ">"
 
 <second-deg-op> ::=     "&"
+

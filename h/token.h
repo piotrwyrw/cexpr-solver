@@ -41,10 +41,7 @@ typedef struct {
 
 token *token_create(char, token_type, unsigned);
 
-extern _Bool token_show_warn_classification;
 token *token_auto(char, unsigned);
-
-void token_set_warning(_Bool);
 
 void token_destroy(token *);
 

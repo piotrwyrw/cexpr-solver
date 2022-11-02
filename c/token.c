@@ -3,6 +3,7 @@
 //
 
 #include "../h/token.h"
+#include "../h/settings.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -62,18 +63,12 @@ token *token_create(char c, token_type type, unsigned col) {
     return t;
 }
 
-_Bool token_show_warn_classification = true;
-
 token *token_auto(char c, unsigned col) {
     token_type type = classify(c);
-    if (type == token_unknown && token_show_warn_classification)
-        printf("Warning: Failed to classify '%c'.\n", c);
+    if (type == token_unknown)
+        DEBUG("Failed to classify token '%c'.\n", c);
 
     return token_create(c, type, col);
-}
-
-void token_set_warning(_Bool w) {
-    token_show_warn_classification = w;
 }
 
 void token_destroy(token *t) {
