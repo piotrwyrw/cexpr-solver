@@ -7,8 +7,6 @@
 
 #include "token.h"
 
-#define __ignore [[nodiscard("Return value must not be ignored.")]]
-
 typedef enum {
     node_type_binary,
     node_type_unary,
@@ -80,20 +78,20 @@ struct node {
 
 void node_print_recurse(node *, int);
 
-__ignore node *node_create_base(node_type);
+node *node_create_base(node_type);
 void node_destroy(node *);
 
-__ignore node *node_create_binary(node *, node *, binary_type);
+node *node_create_binary(node *, node *, binary_type);
 void node_destroy_binary(node *);
 
-__ignore node *node_create_unary(node *, unary_type);
+node *node_create_unary(node *, unary_type);
 void node_destroy_unary(node *);
 
-__ignore node *node_create_variable(char);
+node *node_create_variable(char);
 
-__ignore node *node_create_immediate(immediate_value);
+node *node_create_immediate(immediate_value);
 
-__ignore node *node_create_assignment(node *, node *);
+node *node_create_assignment(node *, node *);
 void node_destroy_assignment(node *);
 
 node *node_create_immediate_auto(token *);
