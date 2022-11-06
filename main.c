@@ -3,6 +3,7 @@
 #include "h/parse.h"
 #include "h/lookup.h"
 #include "h/settings.h"
+#include "h/solver.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -126,16 +127,14 @@ void handle_command(char *s) {
         return;
     }
 
-
     printf("Unknown command. Use '.help' for help.\n");
-
 }
 
 void start_repl() {
     char *buffer = malloc(100+1);
     memset(buffer, '\0', 101);
 
-    lookup_table *table = lt = create_lookup_table(LETTER_COUNT, node_destroy);
+    lookup_table *table = lt = create_lookup_table(LETTER_COUNT);
     node *n = NULL;
 
     while (!stat_exit_repl) {
@@ -158,8 +157,28 @@ void start_repl() {
         if (!n)
             goto m_free;
 
-        if (n->type == node_type_assignment)
+        if (n->type != node_type_solve && n->type != node_type_assignment) {
+            DEBUG("Expected statement.\n");
+            goto m_free;
+        }
+
+        if (n->type == node_type_assignment) {
+            if (!node_check_assignment(n, n->assignment.var->variable.variable_name)) {
+                printf("Invalid assignment: The expression contains the target variable.\n");
+                goto m_free;
+            }
             lookup_write(table, n);
+            goto m_free;
+        }
+
+        if (n->type == node_type_solve) {
+            final_value v = solve_recurse(table, n->solve.val);
+            if (v == final_unknown) {
+                printf("Solve unsuccessful.\n");
+                goto m_free;
+            }
+            printf("=> %c\n", (v == final_on) ? '1' : '0');
+        }
 
         m_free:
         free(input);
@@ -172,6 +191,9 @@ void start_repl() {
 }
 
 int main() {
+    // Disable stream buffering
+    setbuf(stdout, NULL);
+
     printf("LogiC REPL v1.0\nType '.exit' to exit or '.help' for help.\n");
 
     start_repl();

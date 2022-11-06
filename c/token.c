@@ -26,6 +26,8 @@ token_type classify(char c) {
     if (c == ':') return token_colon;
     if (c == '=') return token_equals;
     if (c == ';') return token_semi;
+    if (c == '[') return token_lsquare;
+    if (c == ']') return token_rsquare;
 
     return token_unknown;
 }
@@ -48,6 +50,8 @@ const char *token_type_to_string(token_type t) {
         AUTO(token_colon)
         AUTO(token_equals)
         AUTO(token_semi)
+        AUTO(token_lsquare)
+        AUTO(token_rsquare)
         AUTO(token_unknown)
     }
 }

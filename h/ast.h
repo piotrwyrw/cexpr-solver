@@ -13,7 +13,7 @@ typedef enum {
     node_type_variable,
     node_type_immediate,
     node_type_assignment,
-    node_type_not,
+    node_type_solve,
 
     node_type_unknown
 } node_type;
@@ -33,14 +33,16 @@ const char *binary_type_to_string(binary_type);
 binary_type binary_type_from(token_type);
 
 typedef enum {
-    immediate_on,
-    immediate_off,
+    final_on,
+    final_off,
 
-    immediate_unknown
-} immediate_value;
+    final_unknown
+} final_value;
 
-const char *immediate_value_to_string(immediate_value);
-immediate_value immediate_value_from(char);
+const char *final_value_to_string(final_value);
+_Bool final_value_bool(final_value);
+final_value final_value_from(char);
+final_value final_value_logic(final_value, final_value, binary_type);
 
 typedef enum {
     unary_not,
@@ -68,12 +70,15 @@ struct node {
             char variable_name;
         } variable;
         struct {
-            immediate_value value;
+            final_value value;
         } immediate;
         struct {
             node *var;
             node *val;
         } assignment;
+        struct {
+            node *val;
+        } solve;
     };
 };
 
@@ -90,10 +95,13 @@ void node_destroy_unary(node *);
 
 node *node_create_variable(char);
 
-node *node_create_immediate(immediate_value);
+node *node_create_immediate(final_value);
 
 node *node_create_assignment(node *, node *);
 void node_destroy_assignment(node *);
+
+node *node_create_solve(node *);
+void node_destroy_solve(node *);
 
 node *node_create_immediate_auto(token *);
 

@@ -16,35 +16,22 @@ key_val *key_val_create(char key, node *val) {
 }
 
 void key_val_destroy(key_val *kv) {
+    node_destroy(kv->val);
     free(kv);
 }
 
-void key_val_destroy2(key_val *kv, void (*val_free)(void *)) {
-    val_free(kv->val);
-    key_val_destroy(kv);
-}
-
-lookup_table *create_lookup_table(unsigned int size, void (*kv_val_free)(void *)) {
+lookup_table *create_lookup_table(unsigned int size) {
     lookup_table *table = malloc(sizeof(lookup_table));
     table->size = size;
     table->table = malloc(sizeof(key_val) * size);
     for (unsigned i = 0; i < size; i ++)
         table->table[i] = NULL;
-    table->kv_val_free = kv_val_free;
-
     return table;
 }
 
 void lookup_destroy(lookup_table *table) {
     DEBUG("Freeing lookup table.\n");
-    for (unsigned i = 0; i < table->size; i ++)
-        if (table->table[i]) {
-            if (!table->kv_val_free)
-                key_val_destroy(table->table[i]);
-            else
-                key_val_destroy2(table->table[i], table->kv_val_free);
-            table->table[i] = NULL;
-        }
+    lookup_purge(table);
 
     free(table->table);
     free(table);
@@ -59,11 +46,6 @@ int lookup_insert(lookup_table *table, key_val *kv) {
     for (unsigned i = 0; i < table->size; i ++) {
         if (!n) {
             if (table->table[i]->key == kv->key) {
-                if (table->kv_val_free)
-                    (table->kv_val_free)(table->table[i]->val);
-                if (table->kv_val_free)
-                    key_val_destroy2(table->table[i], table->kv_val_free);
-                else
                     key_val_destroy(table->table[i]);
                 table->table[i] = kv;
             }
@@ -123,23 +105,13 @@ int lookup_get(lookup_table *table, char k) {
     return -1;
 }
 
-void lookup_each(lookup_table *t, void(*f)(void *)) {
-    for (unsigned i = 0; i < t->size; i ++)
-        if (t->table[i])
-            f(t->table[i]);
-}
-
 void lookup_purge(lookup_table *t) {
+    DEBUG("Purge lookup table\n");
     for (unsigned i = 0; i < t->size; i ++)
         if (t->table[i]) {
-            if (t->kv_val_free) {
-                key_val_destroy2(t->table[i], t->kv_val_free);
-            } else {
                 key_val_destroy(t->table[i]);
-            }
+            t->table[i] = NULL;
         }
-
-    lookup_clear(t);
 }
 
 unsigned lookup_entry_count(lookup_table *t) {
@@ -147,6 +119,7 @@ unsigned lookup_entry_count(lookup_table *t) {
     for (unsigned i = 0; i < t->size; i ++)
         if (t->table[i])
             u ++;
+    DEBUG("Counting entries :: %d\n", u);
     return u;
 }
 

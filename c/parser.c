@@ -3,6 +3,7 @@
 //
 
 #include "../h/parse.h"
+#include "../h/settings.h"
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -74,11 +75,6 @@ _Bool parser_cmp_var(parser *p, char _c, int n, ...) {
     return state;
 }
 
-#define SYNTAX_ERR(p, x, ...) \
-        printf("[Col. %d :: %s] Syntax error: ", p->t->i, __func__); \
-        printf(x, ##__VA_ARGS__);
-
-
 node *parser_parse(parser *p) {
     if (!p->c) {
         return NULL;
@@ -92,6 +88,12 @@ node *parser_parse(parser *p) {
         goto do_return;
     }
 
+    // Solve
+    if (parser_cmp(p, token_lsquare)) {
+        tmp = parser_parse_solve(p);
+        goto do_return;
+    }
+
     tmp = parser_parse_first_degree(p);
 
     do_return:
@@ -101,6 +103,20 @@ node *parser_parse(parser *p) {
         return NULL;
     }
     return tmp;
+}
+
+_Bool node_check_assignment(node *n, char c) {
+    switch (n->type) {
+        case node_type_binary:
+            return node_check_assignment(n->binary_op.left, c) || node_check_assignment(n->binary_op.right, c);
+        case node_type_variable:
+            if (n->variable.variable_name != c)
+                return true;
+            return false;
+        default:
+            DEBUG("Invalid node type '%s'\n", node_type_to_string(n->type));
+            return false;
+    }
 }
 
 node *parser_parse_assignment(parser *p) {
@@ -127,6 +143,31 @@ node *parser_parse_assignment(parser *p) {
     }
 
     return node_create_assignment(node_create_variable(id), expr);
+}
+
+node *parser_parse_solve(parser *p) {
+    if (!parser_cmp(p, token_lsquare)) {
+        SYNTAX_ERR(p, "Expected '['.\n");
+        return NULL;
+    }
+
+    parser_consume(p);
+
+    node *expr = parser_parse_first_degree(p);
+
+    if (!expr) {
+        SYNTAX_ERR(p, "Expected expression.\n");
+        return NULL;
+    }
+
+    parser_consume(p);
+
+    if (!parser_cmp(p, token_rsquare)) {
+        SYNTAX_ERR(p, "Expected ']'.\n");
+        return NULL;
+    }
+
+    return node_create_solve(expr);
 }
 
 node *parser_parse_first_degree(parser *p) {
@@ -208,7 +249,7 @@ node *parser_parse_atom(parser *p) {
     }
 
     if (parser_cmp(p, token_immediate)) {
-        n = node_create_immediate(immediate_value_from(p->c->c));
+        n = node_create_immediate(final_value_from(p->c->c));
         goto _return;
     }
 

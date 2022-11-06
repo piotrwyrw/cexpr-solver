@@ -27,6 +27,9 @@ typedef enum {
     token_equals,
     token_semi,
 
+    token_lsquare,
+    token_rsquare,
+
     token_unknown
 } token_type;
 

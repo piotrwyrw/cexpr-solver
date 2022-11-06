@@ -4,6 +4,7 @@
 
 #include "../h/ast.h"
 #include "../h/util.h"
+#include "../h/settings.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -19,7 +20,6 @@ const char *node_type_to_string(node_type type) {
         AUTO(node_type_variable)
         AUTO(node_type_immediate)
         AUTO(node_type_assignment)
-        AUTO(node_type_not)
         AUTO(node_type_unknown)
     }
 }
@@ -45,27 +45,74 @@ binary_type binary_type_from(token_type type) {
     }
 }
 
-const char *immediate_value_to_string(immediate_value val) {
+const char *final_value_to_string(final_value val) {
     switch (val) {
         default: return STR_UNKNOWN;
-        AUTO(immediate_on)
-        AUTO(immediate_off)
-        AUTO(immediate_unknown)
+        AUTO(final_on)
+        AUTO(final_off)
+        AUTO(final_unknown)
     }
 }
 
-immediate_value immediate_value_from(char c) {
-    switch (c) {
-        case '1': return immediate_on;
-        case '0': return immediate_off;
-        default: return immediate_unknown;
+_Bool final_value_bool(final_value v) {
+    switch (v) {
+        case final_off: return false;
+        case final_on: return true;
+        default:
+            DEBUG("Unknown final passed. Assuming [false].\n");
+            return false;
     }
+}
+
+final_value final_value_from(char c) {
+    switch (c) {
+        case '1':
+        case (char) 1:
+            return final_on;
+        case '0':
+        case (char) 0:
+            return final_off;
+        default: return final_unknown;
+    }
+}
+
+final_value final_value_logic(final_value a, final_value b, binary_type bin) {
+    if (a == final_unknown || b == final_unknown) {
+        DEBUG("Could not perform logical operation: Either of the two finals are unknown.\n");
+        return final_unknown;
+    }
+
+    if (bin == binary_type_unknown) {
+        DEBUG("Could not perform logical operation: The operation type must not be unknown.\n");
+        return final_unknown;
+    }
+
+    _Bool bool_a = final_value_bool(a);
+    _Bool bool_b = final_value_bool(b);
+    _Bool bool_c;
+
+    switch (bin) {
+        case binary_type_implication:
+            bool_c = !bool_a || bool_b;
+            break;
+        case binary_type_xor:
+            bool_c = (bool_a && !bool_b) || (!bool_a && bool_b);
+            break;
+        case binary_type_and:
+            bool_c = bool_a && bool_b;
+            break;
+        case binary_type_or:
+            bool_c = bool_a || bool_b;
+            break;
+    }
+
+    return final_value_from((char) bool_c);
 }
 
 const char *unary_to_string(unary_type type) {
     switch (type) {
-        default: return STR_UNKNOWN;
         AUTO(unary_not)
+        default: return STR_UNKNOWN;
     }
 }
 
@@ -110,7 +157,7 @@ void node_print_recurse(node *n, int d) {
             _PRINT("<Variable> :: %c\n", n->variable.variable_name);
             break;
         case node_type_immediate:
-            _PRINT("<Immediate> :: %s\n", immediate_value_to_string(n->immediate.value));
+            _PRINT("<Immediate> :: %s\n", final_value_to_string(n->immediate.value));
             break;
         case node_type_unary:
             _PRINT("<Unary> :: %s\n", unary_to_string(n->unary_op.type));
@@ -137,6 +184,18 @@ void node_print_recurse(node *n, int d) {
         case node_type_unknown:
             _PRINT("<Unknown>\n");
             break;
+        case node_type_solve:
+            _PRINT("<Solve>\n");
+            d ++;
+                _PRINT("Expression ->\n");
+                d ++;
+                    node_print_recurse(n->solve.val, d);
+                d --;
+            d --;
+            break;
+        default:
+            _PRINT("<Unsupported>\n");
+            break;
     }
 
     end:
@@ -162,6 +221,9 @@ void node_destroy(node *node) {
             break;
         case node_type_assignment:
             node_destroy_assignment(node);
+            break;
+        case node_type_solve:
+            node_destroy_solve(node);
             break;
         default:
             break;
@@ -198,7 +260,7 @@ node *node_create_variable(char name) {
     return n;
 }
 
-node *node_create_immediate(immediate_value v) {
+node *node_create_immediate(final_value v) {
     node *n = node_create_base(node_type_immediate);
     n->immediate.value = v;
     return n;
@@ -216,6 +278,16 @@ void node_destroy_assignment(node *n) {
     node_destroy(n->assignment.val);
 }
 
+node *node_create_solve(node *expr) {
+    node *n = node_create_base(node_type_solve);
+    n->solve.val = expr;
+    return n;
+}
+
+void node_destroy_solve(node *n) {
+    node_destroy(n->solve.val);
+}
+
 node *node_create_immediate_auto(token *t) {
     if (t == NULL)
         return NULL;
@@ -223,9 +295,9 @@ node *node_create_immediate_auto(token *t) {
     if (t->type != token_immediate)
         return NULL;
 
-    immediate_value v;
-    if (t->c == '1') v = immediate_on;
-    else if (t->c == '0') v = immediate_off;
+    final_value v;
+    if (t->c == '1') v = final_on;
+    else if (t->c == '0') v = final_off;
     else { printf("Invalid immediate value: '%c'.\n", t->c); return NULL; }
 
     return node_create_immediate(v);

@@ -11,6 +11,10 @@
 #define CURRENT_TOKEN 'c'
 #define NEXT_TOKEN 'n'
 
+#define SYNTAX_ERR(p, x, ...) \
+        printf("[Col. %d :: %s] Syntax error: ", p->t->i, __func__); \
+        printf(x, ##__VA_ARGS__);
+
 typedef struct {
     tokenizer *t;
     token *c;
@@ -29,7 +33,9 @@ _Bool parser_cmp_var(parser *, char, int, ...);
 
 node *parser_parse(parser *);
 
+_Bool node_check_assignment(node *, char);
 node *parser_parse_assignment(parser *);
+node *parser_parse_solve(parser *);
 
 node *parser_parse_first_degree(parser *);  // Low precedence
 node *parser_parse_second_degree(parser *); // Higher precedence
