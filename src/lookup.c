@@ -2,8 +2,8 @@
 // Created by Piotr Wyrwas on 11/2/2022.
 //
 
-#include "../h/lookup.h"
-#include "../h/settings.h"
+#include "lookup.h"
+#include "settings.h"
 
 #include <stdlib.h>
 #include <stdio.h>

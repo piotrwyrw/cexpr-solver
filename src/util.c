@@ -2,7 +2,7 @@
 // Created by Piotr Wyrwas on 10/24/2022.
 //
 
-#include "../h/util.h"
+#include "util.h"
 
 #include <string.h>
 #include <stdlib.h>

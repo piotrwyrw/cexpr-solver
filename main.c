@@ -1,9 +1,9 @@
-#include "h/tokenizer.h"
-#include "h/util.h"
-#include "h/parse.h"
-#include "h/lookup.h"
-#include "h/settings.h"
-#include "h/solver.h"
+#include "src/tokenizer.h"
+#include "src/util.h"
+#include "src/parse.h"
+#include "src/lookup.h"
+#include "src/settings.h"
+#include "src/solver.h"
 
 #include <stdlib.h>
 #include <stdio.h>

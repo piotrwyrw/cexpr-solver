@@ -2,7 +2,7 @@
 // Created by Piotr Wyrwas on 11/2/2022.
 //
 
-#include "../h/settings.h"
+#include "settings.h"
 
 #include <stdbool.h>
 

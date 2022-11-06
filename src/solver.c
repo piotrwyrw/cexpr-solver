@@ -2,8 +2,8 @@
 // Created by Piotr Wyrwas on 11/6/2022.
 //
 
-#include "../h/solver.h"
-#include "../h/settings.h"
+#include "solver.h"
+#include "settings.h"
 
 #include <stdio.h>
 

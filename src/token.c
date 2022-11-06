@@ -2,8 +2,8 @@
 // Created by Piotr Wyrwas on 10/24/2022.
 //
 
-#include "../h/token.h"
-#include "../h/settings.h"
+#include "token.h"
+#include "settings.h"
 
 #include <stdlib.h>
 #include <stdio.h>

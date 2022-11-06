@@ -2,8 +2,8 @@
 // Created by Piotr Wyrwas on 10/24/2022.
 //
 
-#include "../h/parse.h"
-#include "../h/settings.h"
+#include "parse.h"
+#include "settings.h"
 
 #include <stdlib.h>
 #include <stdarg.h>

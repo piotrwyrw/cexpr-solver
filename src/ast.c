@@ -2,9 +2,9 @@
 // Created by Piotr Wyrwas on 10/21/2022.
 //
 
-#include "../h/ast.h"
-#include "../h/util.h"
-#include "../h/settings.h"
+#include "ast.h"
+#include "util.h"
+#include "settings.h"
 
 #include <stdlib.h>
 #include <stdio.h>

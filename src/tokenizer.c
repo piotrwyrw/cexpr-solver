@@ -2,7 +2,7 @@
 // Created by Piotr Wyrwas on 10/24/2022.
 //
 
-#include "../h/tokenizer.h"
+#include "tokenizer.h"
 
 #include <stdlib.h>
 #include <string.h>
