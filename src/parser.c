@@ -113,6 +113,8 @@ _Bool node_check_assignment(node *n, char c) {
             if (n->variable.variable_name != c)
                 return true;
             return false;
+        case node_type_immediate:
+            return true;
         default:
             DEBUG("Invalid node type '%s'\n", node_type_to_string(n->type));
             return false;

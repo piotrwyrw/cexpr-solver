@@ -163,7 +163,7 @@ void start_repl() {
         }
 
         if (n->type == node_type_assignment) {
-            if (!node_check_assignment(n, n->assignment.var->variable.variable_name)) {
+            if (!node_check_assignment(n->assignment.val, n->assignment.var->variable.variable_name)) {
                 printf("Invalid assignment: The expression contains the target variable.\n");
                 goto m_free;
             }
