@@ -1,5 +1,5 @@
 # LogiC
-The new and improved tool for solving logical expression.
+The new and improved tool for solving logical expressions.
 
 `Version 6.11.22`
 
