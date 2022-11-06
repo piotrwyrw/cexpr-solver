@@ -26,7 +26,6 @@ node *parse(char *s) {
     tokenizer_destroy(t);
 
     return n;
-
 }
 
 void lookup_write(lookup_table *t, node *n) {

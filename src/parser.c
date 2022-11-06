@@ -108,7 +108,7 @@ node *parser_parse(parser *p) {
 _Bool node_check_assignment(node *n, char c) {
     switch (n->type) {
         case node_type_binary:
-            return node_check_assignment(n->binary_op.left, c) || node_check_assignment(n->binary_op.right, c);
+            return node_check_assignment(n->binary_op.left, c) && node_check_assignment(n->binary_op.right, c);
         case node_type_variable:
             if (n->variable.variable_name != c)
                 return true;
