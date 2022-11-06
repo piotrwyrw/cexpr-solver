@@ -7,7 +7,7 @@
 #include <stdbool.h>
 
 // Informative Constants
-const char const_version[] = "2.11.22";
+const char const_version[] = "6.11.22";
 const char const_author[] = "Piotr Wyrwas";
 const char const_pkg_name[] = "LogiC";
 
